@@ -1,16 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{BF16EE3A-487F-48E6-B920-AA2C08C74CA1}"
+# 
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BDAE451-C660-4C8B-9E77-7875DE20C9F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{B9378882-A6DE-48DC-AE72-E7385FACF767}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BF16EE3A-487F-48E6-B920-AA2C08C74CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF16EE3A-487F-48E6-B920-AA2C08C74CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF16EE3A-487F-48E6-B920-AA2C08C74CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF16EE3A-487F-48E6-B920-AA2C08C74CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|x64.Build.0 = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Debug|x86.Build.0 = Debug|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|x64.ActiveCfg = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|x64.Build.0 = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|x86.ActiveCfg = Release|Any CPU
+		{B9378882-A6DE-48DC-AE72-E7385FACF767}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B9378882-A6DE-48DC-AE72-E7385FACF767} = {0BDAE451-C660-4C8B-9E77-7875DE20C9F2}
 	EndGlobalSection
 EndGlobal
