@@ -2,8 +2,8 @@
 
 public class Repeatable
 {
-    public string Id { get; set; }
-    public required string TodoId { get; set; }
+    public Guid Id { get; set; }
+    public required Guid TodoId { get; set; }
     public Todo Todo { get; set; }
     public RepeatableType Type { get; set; }
     public DateTime StartedAt { get; set; }
