@@ -25,7 +25,6 @@ public class User : IAuditable
         {
             Oid = oid,
             Email = email,
-            CreatedAt = DateTime.UtcNow
         };
     }
 }
