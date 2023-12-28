@@ -15,16 +15,31 @@ public class UserContextAccessor : IUserContextAccessor
 
     private ClaimsIdentity? Identity => (ClaimsIdentity?) _httpContextAccessor.HttpContext?.User.Identity;
 
-    public Guid? Id
+    public Guid Id
     {
         get
         {
             string? id = Identity?.Claims.FirstOrDefault(c => c.Type == ExtraClaimTypes.UserId)?.Value;
 
-            return !string.IsNullOrEmpty(id) ? new Guid(id) : null;
+            return !string.IsNullOrEmpty(id) ? new Guid(id) : throw new NullReferenceException("Cannot get user id");
         }
     }
 
-    public string? Oid => Identity?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-    public string? Email => Identity?.Claims.FirstOrDefault(c => c.Type == ExtraClaimTypes.Email)?.Value;
+    public string Oid
+    {
+        get
+        {
+            string? oid = Identity?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            return !string.IsNullOrEmpty(oid) ? oid : throw new NullReferenceException("Cannot get user oid");
+        }
+    }
+
+    public string Email 
+    {
+        get
+        {
+            string? email = Identity?.Claims.FirstOrDefault(c => c.Type == ExtraClaimTypes.Email)?.Value;
+            return !string.IsNullOrEmpty(email) ? email : throw new NullReferenceException("Cannot get user email");
+        }
+    }
 }

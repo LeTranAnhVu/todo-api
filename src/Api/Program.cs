@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Api.Filters;
 using Api.Services;
 using Application;
@@ -16,7 +17,11 @@ services.UseApplication();
 services.AddHttpContextAccessor();
 services.AddScoped<IUserContextAccessor, UserContextAccessor>();
 
-services.AddControllers(opts => { opts.Filters.Add<ActivateUserAuthorizationFilter>(); });
+services.AddControllers(opts => { opts.Filters.Add<ActivateUserAuthorizationFilter>(); })
+    .AddJsonOptions(options =>
+    {
+        // options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 
 services.AddAuthentication(options =>
 {

@@ -8,5 +8,5 @@ CREATE TABLE public.todo
     user_id  uuid NOT NULL,
     CONSTRAINT fk_parent FOREIGN KEY (parent_id) REFERENCES public.todo (id),
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.user (id),
-    UNIQUE (user_id, name, parent_id)
+    CONSTRAINT user_name_parent_uni UNIQUE NULLS NOT DISTINCT (user_id, name, parent_id)
 )
