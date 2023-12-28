@@ -4,6 +4,7 @@ namespace Application.DTOs;
 
 public class TodoDto
 {
+    public Guid Id { get; set; }
     public required string Name { get; set; }
     public ICollection<TodoDto>? SubTodos { get; set; }
     public RepeatableType? RepeatableType { get; set; }

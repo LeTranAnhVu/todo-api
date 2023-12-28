@@ -27,9 +27,28 @@ public class TodosController: ControllerBase
         return _todoService.GetAllForOwnerAsync();
     }
     
+    [HttpGet("{id}")]
+    public Task<TodoDto> GetOne(Guid id)
+    {
+        return _todoService.GetOneForOwnerById(id);
+    }
+    
     [HttpPost]
     public Task<TodoDto> Create(CreateTodoDto dto)
     {
         return _todoService.CreateAsync(dto);
+    }
+    
+    [HttpPut("{id}")]
+    public Task<TodoDto> Update(Guid id, UpdateTodoDto dto)
+    {
+        return _todoService.UpdateFromOwnerAsync(id, dto);
+    }
+    
+    
+    [HttpDelete("{id}")]
+    public Task Delete(Guid id)
+    {
+        return _todoService.DeleteFromOwnerAsync(id);
     }
 }

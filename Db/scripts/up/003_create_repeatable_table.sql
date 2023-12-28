@@ -5,6 +5,6 @@ CREATE TABLE public.repeatable
     started_at timestamptz  NOT NULL,
     ended_at timestamptz,
     todo_id  uuid NOT NULL,
-    CONSTRAINT fk_todo FOREIGN KEY (todo_id) REFERENCES public.todo (id),
+    CONSTRAINT fk_todo FOREIGN KEY (todo_id) REFERENCES public.todo (id) ON DELETE CASCADE,
     UNIQUE (type, todo_id)
 )

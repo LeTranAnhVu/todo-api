@@ -7,5 +7,5 @@ CREATE TABLE public.todo_status
     todo_id      uuid        NOT NULL,
     created_at   timestamptz NOT NULL,
     updated_at   timestamptz,
-    CONSTRAINT fk_todo FOREIGN KEY (todo_id) REFERENCES public.todo (id)
+    CONSTRAINT fk_todo FOREIGN KEY (todo_id) REFERENCES public.todo (id) ON DELETE CASCADE
 )
