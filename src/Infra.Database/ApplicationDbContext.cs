@@ -9,6 +9,7 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Todo> Todos { get; set; }
+    public DbSet<TodoStatus> TodoStatuses { get; set; }
     public DbSet<Repeatable> Repeatables { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -48,6 +49,10 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
         modelBuilder.Entity<Repeatable>()
             .HasIndex(re => new {re.Type, re.TodoId })
             .IsUnique();
+
+        modelBuilder.Entity<TodoStatus>()
+            .HasOne(stt => stt.Todo)
+            .WithMany();
 
     }
 }

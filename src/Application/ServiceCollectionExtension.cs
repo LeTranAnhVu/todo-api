@@ -9,6 +9,7 @@ public static class ServiceCollectionExtension
     {
         services.AddAutoMapper(typeof(ApplicationProfile));
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITodoStatusService, TodoStatusService>();
         services.AddScoped<ITodoService, TodoService>();
         return services;
     }

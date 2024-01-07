@@ -18,13 +18,14 @@ public class Todo : IAuditable
 
     public User User { get; set; }
 
-    public static Todo Create(Guid userId, string name, Repeatable? repeatable = null)
+    public static Todo Create(Guid userId, string name, Repeatable? repeatable = null, Guid? parentId = null)
     {
         return new Todo()
         {
             UserId = userId,
             Name = name,
-            Repeatable = repeatable
+            Repeatable = repeatable,
+            ParentId = parentId
         };
     }
 }

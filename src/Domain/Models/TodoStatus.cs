@@ -11,15 +11,17 @@ public class TodoStatus : IAuditable
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
-    public void Complete()
+    public void Complete(bool isCompleted)
     {
-        CompletedAt = DateTime.UtcNow;
-        IsCompleted = true;
+        CompletedAt = isCompleted ? DateTime.UtcNow : null;
+        IsCompleted = isCompleted;
     }
-    
-    public void Incomplete()
+
+    public static TodoStatus Create(Guid todoId)
     {
-        CompletedAt = null;
-        IsCompleted = false;
+        return new TodoStatus()
+        {
+            TodoId = todoId
+        };
     }
 }

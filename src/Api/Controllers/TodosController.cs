@@ -1,7 +1,5 @@
 ﻿using Application.DTOs;
-using Application.Interfaces;
 using Application.Services;
-using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,45 +8,36 @@ namespace Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class TodosController: ControllerBase
+public class TodosController(ITodoService todoService) : ControllerBase
 {
-    private readonly IUserContextAccessor _userContextAccessor;
-    private readonly ITodoService _todoService;
-
-    public TodosController(IUserContextAccessor userContextAccessor, ITodoService todoService)
-    {
-        _userContextAccessor = userContextAccessor;
-        _todoService = todoService;
-    }
-    
     [HttpGet]
-    public Task<List<TodoDto>> GetAll()
+    public async Task<ActionResult<List<TodoDto>>> GetAll()
     {
-        return _todoService.GetAllForOwnerAsync();
+        return Ok(await todoService.GetAllTodosAsync());
     }
     
-    [HttpGet("{id}")]
-    public Task<TodoDto> GetOne(Guid id)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<TodoDto>> GetOne(Guid id)
     {
-        return _todoService.GetOneForOwnerById(id);
+        return Ok(await todoService.GetTodoById(id));
     }
     
     [HttpPost]
-    public Task<TodoDto> Create(CreateTodoDto dto)
+    public async Task<ActionResult<TodoDto>> Create(CreateTodoDto dto)
     {
-        return _todoService.CreateAsync(dto);
+        return Ok(await todoService.CreateAsync(dto));
     }
     
-    [HttpPut("{id}")]
-    public Task<TodoDto> Update(Guid id, UpdateTodoDto dto)
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TodoDto>> Update(Guid id, UpdateTodoDto dto)
     {
-        return _todoService.UpdateFromOwnerAsync(id, dto);
+        return Ok(await todoService.UpdateTodoAsync(id, dto));
     }
     
     
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public Task Delete(Guid id)
     {
-        return _todoService.DeleteFromOwnerAsync(id);
+        return todoService.DeleteTodoAsync(id);
     }
 }
