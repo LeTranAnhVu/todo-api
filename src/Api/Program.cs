@@ -34,6 +34,20 @@ services.AddAuthentication(options =>
     options.Audience = auth0.GetValue<string>("Audience");
 });
 
+builder.Services.AddCors(options =>
+{
+    var allowedOrigins = builder.Configuration.GetSection("Cors").GetSection("AllowedOrigins").Get<string[]>();
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            if (allowedOrigins is not null)
+            {
+                policy.WithOrigins(allowedOrigins)
+                    .AllowAnyHeader();
+            }
+        });
+});
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -46,6 +60,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
