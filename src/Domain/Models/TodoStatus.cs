@@ -7,7 +7,7 @@ public class TodoStatus : IAuditable
     public Todo Todo { get; set; }
     public DateTime? CompletedAt { get; set; }
     public bool IsCompleted { get; set; }
-    public DateTime StartedAt { get; set; }
+    public DateTime OccuredAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -17,11 +17,12 @@ public class TodoStatus : IAuditable
         IsCompleted = isCompleted;
     }
 
-    public static TodoStatus Create(Guid todoId)
+    public static TodoStatus Create(Guid todoId, DateTime occuredAt)
     {
         return new TodoStatus()
         {
-            TodoId = todoId
+            TodoId = todoId,
+            OccuredAt = occuredAt
         };
     }
 }

@@ -2,5 +2,6 @@
 
 public enum RepeatableType
 {
-    Daily = 1
+    Once = 1,
+    Daily
 }

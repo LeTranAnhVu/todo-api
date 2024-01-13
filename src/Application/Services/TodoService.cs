@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Exceptions;
 using Application.Interfaces;
 using AutoMapper;
@@ -42,6 +41,8 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Name is used in another todo");
         }
 
+        var parentRepeatableType = dto.RepeatableType ?? RepeatableType.Once;
+
         // Validate the sub todo
         var duplicateSubTodo = dto.SubTodos?.GroupBy(stodo => stodo.Name).Where(g => g.Count() > 1);
         if (duplicateSubTodo?.Any() == true)
@@ -51,11 +52,11 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
 
         var subTodos = dto.SubTodos?.Select((sTodoDto) =>
         {
-            Repeatable? sRepeatable = Repeatable.Create(sTodoDto.RepeatableType);
+            Repeatable? sRepeatable = Repeatable.Create(sTodoDto.RepeatableType ?? parentRepeatableType);
             return Todo.Create(userContext.Id, sTodoDto.Name, sRepeatable);
         }).ToList() ?? new List<Todo>();
 
-        Repeatable? repeatable = Repeatable.Create(dto.RepeatableType);
+        Repeatable? repeatable = Repeatable.Create(parentRepeatableType);
         var todo = Todo.Create(userContext.Id, dto.Name, repeatable);
         todo.SubTodos = subTodos;
         context.Todos.Add(todo);
@@ -74,7 +75,7 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Duplicated sub todo");
         }
 
-        Repeatable? sRepeatable = Repeatable.Create(dto.RepeatableType);
+        Repeatable? sRepeatable = Repeatable.Create(dto.RepeatableType ?? RepeatableType.Once);
         var subTodo = Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
         context.Todos.Add(subTodo);
         await context.SaveChangesAsync();

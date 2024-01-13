@@ -14,7 +14,7 @@ public class Todo : IAuditable
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     
-    public Repeatable? Repeatable { get; set; } 
+    public Repeatable Repeatable { get; set; } 
 
     public User User { get; set; }
 

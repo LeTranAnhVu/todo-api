@@ -9,18 +9,23 @@ public class Repeatable
     public DateTime StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }
 
-    public static Repeatable? Create(RepeatableType? type, DateTime? startedAt = null, DateTime? endedAt = null)
+    public static Repeatable Create(RepeatableType type, DateTime? startedAt = null, DateTime? endedAt = null)
     {
-        if (type is { } t)
+        return new Repeatable()
         {
-            return new Repeatable()
-            {
-                Type = t,
-                StartedAt = startedAt ?? DateTime.UtcNow,
-                EndedAt = endedAt
-            };
+            Type = type,
+            StartedAt = startedAt ?? DateTime.UtcNow,
+            EndedAt = endedAt
+        };
+    }
+
+    public (bool IsValid, string? Reason) IsValidOccurredDate(DateTime? occuredAt)
+    {
+        if (occuredAt is null && Type != RepeatableType.Once)
+        {
+            return (false, "Occured time is required");
         }
 
-        return null;
+        return (true, null);
     }
 }

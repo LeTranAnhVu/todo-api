@@ -7,7 +7,7 @@ public class TodoDto
     public Guid Id { get; set; }
     public required string Name { get; set; }
     public ICollection<SubTodoDto>? SubTodos { get; set; }
-    public RepeatableType? RepeatableType { get; set; }
+    public RepeatableType RepeatableType { get; set; }
     public DateTime? RepeatableStartedAt { get; set; }
 
     public DateTime CreatedAt { get; set; }

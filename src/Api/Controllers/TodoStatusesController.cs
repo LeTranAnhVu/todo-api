@@ -17,6 +17,12 @@ public class TodoStatusesController : ControllerBase
       _statusService = statusService;
    }
    
+   [HttpGet]
+   public async Task<ActionResult<List<TodoStatusDto>>> GetAll([FromQuery] List<Guid>? todoIds)
+   {
+      return Ok(await _statusService.GetTodoStatusesAsync(todoIds));
+   }
+   
    [HttpPost]
    public async Task<ActionResult<TodoStatusDto>> Create(UpsertTodoStatusDto dto)
    {
