@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Api.Filters;
 using Api.Services;
 using Application;
@@ -20,6 +21,10 @@ services.AddControllers(opts =>
 {
     opts.Filters.Add<ActivateUserAuthorizationFilter>();
     opts.Filters.Add<ExceptionsFilter>();
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    // options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
 services.AddAuthentication(options =>

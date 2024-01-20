@@ -28,6 +28,8 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             .Where(td => td.UserId == userId && td.ParentId == null)
             .Include(td => td.Repeatable)
             .Include(td => td.SubTodos)
+            .ThenInclude(subTodo => subTodo.Repeatable)
+            .OrderByDescending(todo => todo.CreatedAt)
             .ToListAsync();
         return mapper.Map<List<TodoDto>>(todos);
     }
@@ -148,6 +150,7 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
     public async Task DeleteTodoAsync(Guid id)
     {
         var todo = await InternalGetOneById(id, userContext.Id);
+        context.Todos.RemoveRange(todo.SubTodos);
         context.Todos.Remove(todo);
         await context.SaveChangesAsync();
     }
@@ -165,7 +168,9 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         if (ownerId is not null)
         {
             todo = await context.Todos
+                .Include(td => td.Repeatable)
                 .Include(td => td.SubTodos)
+                .ThenInclude(std => std.Repeatable)
                 .FirstOrDefaultAsync(td =>
                     td.Id == id
                     && td.UserId == ownerId);
