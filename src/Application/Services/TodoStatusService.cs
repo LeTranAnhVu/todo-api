@@ -28,22 +28,44 @@ public class TodoStatusService(
             .FirstOrDefaultAsync(td =>
                 td.Id == dto.TodoId
                 && td.UserId == ownerId);
-        
+
         if (todo is null)
         {
             throw new ApplicationValidationException("Invalid todo id");
         }
-        
+
         // Can be null if repeatable type is once.
-        (bool isValidOccuredAt, string errorMessage) = todo.Repeatable.IsValidOccurredDate(dto.OccuredAt);
-        if(!isValidOccuredAt)
+        (bool isValidOccurredAt, string errorMessage) = todo.Repeatable.IsValidOccurredDate(dto.OccurredAt);
+        if (!isValidOccurredAt)
         {
             throw new ApplicationValidationException(errorMessage);
         }
-        
-        var status = TodoStatus.Create(todo.Id, dto.OccuredAt ?? DateTime.UtcNow);
+
+        // Check duplicate
+        // Status should not be duplicated if it not match to the repeatable rule
+        var existingStatusesQuery = context.TodoStatuses.Where(stt => stt.TodoId == todo.Id).AsQueryable();
+        switch (todo.Repeatable.Type)
+        {
+            case RepeatableType.Daily:
+                existingStatusesQuery =
+                    existingStatusesQuery.Where(stt => dto.OccurredAt.Value.ToUniversalTime().Date == stt.OccurredAt.ToUniversalTime().Date);
+                break;
+            case RepeatableType.Once:
+                break;
+            default:
+                throw new ApplicationValidationException("Unsupported repeatable type");
+        }
+
+        var existingStatus = await existingStatusesQuery.FirstOrDefaultAsync();
+
+        // Just update existing one if has any
+        var status = existingStatus ?? TodoStatus.Create(todo.Id, dto.OccurredAt ?? DateTime.UtcNow);
         status.Complete(dto.IsCompleted);
-        context.TodoStatuses.Add(status);
+        if (existingStatus is null)
+        {
+            context.TodoStatuses.Add(status);
+        }
+
         await context.SaveChangesAsync();
         return mapper.Map<TodoStatusDto>(status);
     }
@@ -55,7 +77,7 @@ public class TodoStatusService(
         {
             throw new EntityNotFoundException("Todo status");
         }
-        
+
         status.Complete(dto.IsCompleted);
         await context.SaveChangesAsync();
         return mapper.Map<TodoStatusDto>(status);
@@ -68,6 +90,7 @@ public class TodoStatusService(
         {
             query = query.Where(stt => todoIds.Contains(stt.TodoId));
         }
+
         return mapper.ProjectTo<TodoStatusDto>(query)
             .ToListAsync();
     }

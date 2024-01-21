@@ -2,7 +2,7 @@ CREATE TABLE public.todo_status
 (
     id            uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     is_completed  BOOLEAN,
-    occured_at timestamptz NOT NULL,
+    occurred_at timestamptz NOT NULL,
     completed_at  timestamptz,
     todo_id       uuid        NOT NULL,
     created_at    timestamptz NOT NULL,

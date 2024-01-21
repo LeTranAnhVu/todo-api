@@ -19,11 +19,18 @@ public class Repeatable
         };
     }
 
-    public (bool IsValid, string? Reason) IsValidOccurredDate(DateTime? occuredAt)
+    public (bool IsValid, string? Reason) IsValidOccurredDate(DateTime? occurredAt)
     {
-        if (occuredAt is null && Type != RepeatableType.Once)
+        if (occurredAt is null && Type != RepeatableType.Once)
         {
-            return (false, "Occured time is required");
+            return (false, "Occurred time is required");
+        }
+        
+        if (occurredAt is not null 
+            && Type == RepeatableType.Once 
+            && StartedAt.ToUniversalTime().Date != occurredAt.Value.ToUniversalTime().Date)
+        {
+            return (false, "Occurred time is invalid for the once time todo");
         }
 
         return (true, null);
