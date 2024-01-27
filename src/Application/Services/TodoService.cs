@@ -45,6 +45,17 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
 
         var parentRepeatableType = dto.RepeatableType ?? RepeatableType.Once;
         var parentRepeatableStartedAt = dto.StartedAt;
+        var parentRepeatableEndedAt = dto.EndedAt;
+
+        if (parentRepeatableEndedAt.HasValue && !parentRepeatableStartedAt.HasValue)
+        {
+            throw new ApplicationValidationException("Start date is required");
+        }
+
+        if (parentRepeatableEndedAt.HasValue && parentRepeatableEndedAt < parentRepeatableStartedAt)
+        {
+            throw new ApplicationValidationException("End date must be after the start date");
+        }
 
         // Validate the sub todo
         var duplicateSubTodo = dto.SubTodos?.GroupBy(stodo => stodo.Name).Where(g => g.Count() > 1);
@@ -55,11 +66,19 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
 
         var subTodos = dto.SubTodos?.Select((sTodoDto) =>
         {
-            Repeatable sRepeatable = Repeatable.Create(sTodoDto.RepeatableType ?? parentRepeatableType, parentRepeatableStartedAt);
+            Repeatable sRepeatable = Repeatable.Create(
+                sTodoDto.RepeatableType ?? parentRepeatableType,
+                parentRepeatableStartedAt,
+                parentRepeatableEndedAt);
+
             return Todo.Create(userContext.Id, sTodoDto.Name, sRepeatable);
         }).ToList() ?? new List<Todo>();
 
-        Repeatable repeatable = Repeatable.Create(parentRepeatableType, parentRepeatableStartedAt);
+        Repeatable repeatable = Repeatable.Create(
+            parentRepeatableType,
+            parentRepeatableStartedAt,
+            parentRepeatableEndedAt);
+
         var todo = Todo.Create(userContext.Id, dto.Name, repeatable);
         todo.SubTodos = subTodos;
         context.Todos.Add(todo);

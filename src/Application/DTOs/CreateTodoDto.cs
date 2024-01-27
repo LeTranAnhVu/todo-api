@@ -12,4 +12,5 @@ public class CreateTodoDto
     public RepeatableType? RepeatableType { get; set; } 
     
     public DateTime? StartedAt { get; set; }
+    public DateTime? EndedAt { get; set; }
 }
