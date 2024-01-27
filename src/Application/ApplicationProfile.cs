@@ -13,7 +13,7 @@ public class ApplicationProfile : Profile
                 dto => dto.RepeatableType,
                 opt => opt.MapFrom(todo => todo.Repeatable!.Type))
             .ForMember(
-                dto => dto.RepeatableStartedAt, opt =>
+                dto => dto.StartedAt, opt =>
                     opt.MapFrom(todo => todo.Repeatable!.StartedAt));
 
         CreateMap<Todo, TodoDto>()
@@ -21,7 +21,7 @@ public class ApplicationProfile : Profile
                 dto => dto.RepeatableType,
                 opt => opt.MapFrom(todo => todo.Repeatable!.Type))
             .ForMember(
-                dto => dto.RepeatableStartedAt,
+                dto => dto.StartedAt,
                 opt => opt.MapFrom(todo => todo.Repeatable!.StartedAt));
 
         CreateMap<TodoStatus, TodoStatusDto>()

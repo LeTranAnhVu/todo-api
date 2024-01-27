@@ -10,4 +10,6 @@ public class CreateTodoDto
     
     [EnumDataType(typeof(RepeatableType))]
     public RepeatableType? RepeatableType { get; set; } 
+    
+    public DateTime? StartedAt { get; set; }
 }

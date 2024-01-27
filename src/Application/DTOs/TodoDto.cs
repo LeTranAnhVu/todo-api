@@ -8,7 +8,7 @@ public class TodoDto
     public required string Name { get; set; }
     public ICollection<SubTodoDto>? SubTodos { get; set; }
     public RepeatableType RepeatableType { get; set; }
-    public DateTime? RepeatableStartedAt { get; set; }
+    public DateTime? StartedAt { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
