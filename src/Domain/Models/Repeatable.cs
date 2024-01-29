@@ -30,7 +30,20 @@ public class Repeatable
             && Type == RepeatableType.Once 
             && StartedAt.ToUniversalTime().Date != occurredAt.Value.ToUniversalTime().Date)
         {
-            return (false, "Occurred time is invalid for the once time todo");
+            return (false, "Occurred day is invalid for the once time todo");
+        }
+
+        if (occurredAt is not null)
+        {
+            if(StartedAt.ToUniversalTime().Date > occurredAt.Value.ToUniversalTime().Date)
+            {
+                return (false, "Occurred day should happen after start day"); 
+            }
+
+            if (EndedAt is not null && EndedAt.Value.ToUniversalTime().Date < occurredAt.Value.ToUniversalTime().Date)
+            {
+                return (false, "Occurred day should happen before end day"); 
+            }
         }
 
         return (true, null);
