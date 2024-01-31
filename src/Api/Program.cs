@@ -25,6 +25,7 @@ services.AddControllers(opts =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     // options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
 });
 
 services.AddAuthentication(options =>

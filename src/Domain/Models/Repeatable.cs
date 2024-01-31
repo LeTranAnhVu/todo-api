@@ -6,41 +6,41 @@ public class Repeatable
     public Guid TodoId { get; set; }
     public Todo Todo { get; set; }
     public RepeatableType Type { get; set; }
-    public DateTime StartedAt { get; set; }
-    public DateTime? EndedAt { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly? EndDate { get; set; }
 
-    public static Repeatable Create(RepeatableType type, DateTime? startedAt = null, DateTime? endedAt = null)
+    public static Repeatable Create(RepeatableType type, DateOnly startDate, DateOnly? endDate = null)
     {
         return new Repeatable()
         {
             Type = type,
-            StartedAt = startedAt ?? DateTime.UtcNow,
-            EndedAt = endedAt
+            StartDate = startDate,
+            EndDate = endDate
         };
     }
 
-    public (bool IsValid, string? Reason) IsValidOccurredDate(DateTime? occurredAt)
+    public (bool IsValid, string? Reason) IsValidOccurredDate(DateOnly? occurDate)
     {
-        if (occurredAt is null && Type != RepeatableType.Once)
+        if (occurDate is null && Type != RepeatableType.Once)
         {
             return (false, "Occurred time is required");
         }
         
-        if (occurredAt is not null 
+        if (occurDate is not null 
             && Type == RepeatableType.Once 
-            && StartedAt.ToUniversalTime().Date != occurredAt.Value.ToUniversalTime().Date)
+            && StartDate != occurDate.Value)
         {
             return (false, "Occurred day is invalid for the once time todo");
         }
 
-        if (occurredAt is not null)
+        if (occurDate is not null)
         {
-            if(StartedAt.ToUniversalTime().Date > occurredAt.Value.ToUniversalTime().Date)
+            if(StartDate > occurDate.Value)
             {
                 return (false, "Occurred day should happen after start day"); 
             }
 
-            if (EndedAt is not null && EndedAt.Value.ToUniversalTime().Date < occurredAt.Value.ToUniversalTime().Date)
+            if (EndDate is not null && EndDate.Value < occurDate.Value)
             {
                 return (false, "Occurred day should happen before end day"); 
             }

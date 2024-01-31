@@ -44,15 +44,11 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         }
 
         var parentRepeatableType = dto.RepeatableType ?? RepeatableType.Once;
-        var parentRepeatableStartedAt = dto.StartedAt;
-        var parentRepeatableEndedAt = dto.EndedAt;
+        
+        var startDate = dto.StartDate;
+        var endDate = dto.EndDate;
 
-        if (parentRepeatableEndedAt.HasValue && !parentRepeatableStartedAt.HasValue)
-        {
-            throw new ApplicationValidationException("Start date is required");
-        }
-
-        if (parentRepeatableEndedAt.HasValue && parentRepeatableEndedAt < parentRepeatableStartedAt)
+        if (endDate.HasValue && endDate < startDate)
         {
             throw new ApplicationValidationException("End date must be after the start date");
         }
@@ -68,16 +64,16 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         {
             Repeatable sRepeatable = Repeatable.Create(
                 sTodoDto.RepeatableType ?? parentRepeatableType,
-                parentRepeatableStartedAt,
-                parentRepeatableEndedAt);
+                startDate,
+                endDate);
 
             return Todo.Create(userContext.Id, sTodoDto.Name, sRepeatable);
         }).ToList() ?? new List<Todo>();
 
         Repeatable repeatable = Repeatable.Create(
             parentRepeatableType,
-            parentRepeatableStartedAt,
-            parentRepeatableEndedAt);
+            startDate,
+            endDate);
 
         var todo = Todo.Create(userContext.Id, dto.Name, repeatable);
         todo.SubTodos = subTodos;
@@ -97,7 +93,14 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Duplicated sub todo");
         }
 
-        Repeatable? sRepeatable = Repeatable.Create(dto.RepeatableType ?? RepeatableType.Once);
+        var repeatableType = dto.RepeatableType ?? RepeatableType.Once;
+
+        if (repeatableType != RepeatableType.Once && repeatableType != parent.Repeatable.Type)
+        {
+            throw new ApplicationValidationException("Invalid repeatable type");
+        }
+
+        Repeatable sRepeatable = Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
         var subTodo = Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
         context.Todos.Add(subTodo);
         await context.SaveChangesAsync();

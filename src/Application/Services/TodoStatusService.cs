@@ -35,10 +35,10 @@ public class TodoStatusService(
         }
 
         // Can be null if repeatable type is once.
-        (bool isValidOccurredAt, string errorMessage) = todo.Repeatable.IsValidOccurredDate(dto.OccurredAt);
-        if (!isValidOccurredAt)
+        (bool isValidOccurDate, string? errorMessage) = todo.Repeatable.IsValidOccurredDate(dto.OccurDate);
+        if (!isValidOccurDate)
         {
-            throw new ApplicationValidationException(errorMessage);
+            throw new ApplicationValidationException(errorMessage ?? nameof(isValidOccurDate));
         }
 
         // Check duplicate
@@ -48,7 +48,7 @@ public class TodoStatusService(
         {
             case RepeatableType.Daily:
                 existingStatusesQuery =
-                    existingStatusesQuery.Where(stt => dto.OccurredAt.Value.ToUniversalTime().Date == stt.OccurredAt.ToUniversalTime().Date);
+                    existingStatusesQuery.Where(stt => dto.OccurDate == stt.OccurDate);
                 break;
             case RepeatableType.Once:
                 break;
@@ -59,7 +59,7 @@ public class TodoStatusService(
         var existingStatus = await existingStatusesQuery.FirstOrDefaultAsync();
 
         // Just update existing one if has any
-        var status = existingStatus ?? TodoStatus.Create(todo.Id, dto.OccurredAt ?? DateTime.UtcNow);
+        var status = existingStatus ?? TodoStatus.Create(todo.Id, dto.OccurDate);
         status.Complete(dto.IsCompleted);
         if (existingStatus is null)
         {

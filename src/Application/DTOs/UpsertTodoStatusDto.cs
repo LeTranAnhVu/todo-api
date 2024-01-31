@@ -4,5 +4,5 @@ public class UpsertTodoStatusDto
 {
     public Guid TodoId { get; set; }
     public bool IsCompleted { get; set; }
-    public DateTime? OccurredAt { get; set; }
+    public DateOnly OccurDate { get; set; }
 }
