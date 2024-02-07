@@ -9,5 +9,5 @@ public class CreateSubTodoDto
     public required string Name { get; set; }
     
     [EnumDataType(typeof(RepeatableType))]
-    public RepeatableType? RepeatableType { get; set; } 
+    public RepeatableType RepeatableType { get; set; } 
 }

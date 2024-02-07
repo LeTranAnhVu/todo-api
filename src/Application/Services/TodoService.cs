@@ -62,6 +62,12 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
 
         var subTodos = dto.SubTodos?.Select((sTodoDto) =>
         {
+            // valida the repeatable type
+            if (sTodoDto.RepeatableType != RepeatableType.Once && sTodoDto.RepeatableType != parentRepeatableType)
+            {
+                throw new ApplicationValidationException($"Cannot set '{sTodoDto.RepeatableType}''s  sub todo '{sTodoDto.Name}' when the todo '{dto.Name}' is '{dto.RepeatableType}' ");
+            }
+
             Repeatable sRepeatable = Repeatable.Create(
                 sTodoDto.RepeatableType ?? parentRepeatableType,
                 startDate,
@@ -93,7 +99,7 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Duplicated sub todo");
         }
 
-        var repeatableType = dto.RepeatableType ?? RepeatableType.Once;
+        var repeatableType = dto.RepeatableType;
 
         if (repeatableType != RepeatableType.Once && repeatableType != parent.Repeatable.Type)
         {
