@@ -11,10 +11,7 @@ public interface ITodoService
 {
     public Task<List<TodoDto>> GetAllTodosAsync();
     public Task<TodoDto> CreateAsync(CreateTodoDto dto);
-    public Task<SubTodoDto> CreateSubTodoAsync(CreateSubTodoDto dto);
     public Task<TodoDto> UpdateTodoAsync(Guid id, UpdateTodoDto dto);
-    public Task<SubTodoDto> UpdateSubTodoAsync(Guid id, UpdateSubTodoDto dto);
-    public Task DeleteSubTodoAsync(Guid id);
     public Task DeleteTodoAsync(Guid id);
     public Task<TodoDto> GetTodoById(Guid id);
 }
@@ -88,31 +85,6 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         await context.SaveChangesAsync();
 
         return mapper.Map<TodoDto>(todo);
-    }
-
-    public async Task<SubTodoDto> CreateSubTodoAsync(CreateSubTodoDto dto)
-    {
-        var parent = await InternalGetOneById(dto.ParentId, userContext.Id);
-
-        var isDuplicated = parent.SubTodos.Any(std => std.Name == dto.Name);
-        if (isDuplicated)
-        {
-            throw new ApplicationValidationException("Duplicated sub todo");
-        }
-
-        var repeatableType = dto.RepeatableType;
-
-        if (repeatableType != RepeatableType.Once && repeatableType != parent.Repeatable.Type)
-        {
-            throw new ApplicationValidationException("Invalid repeatable type");
-        }
-
-        Repeatable sRepeatable =
-            Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
-        var subTodo = Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
-        context.Todos.Add(subTodo);
-        await context.SaveChangesAsync();
-        return mapper.Map<SubTodoDto>(subTodo);
     }
 
     public async Task<TodoDto> UpdateTodoAsync(Guid id, UpdateTodoDto dto)
@@ -194,39 +166,6 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         Repeatable sRepeatable =
             Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
         return Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
-    }
-
-    public async Task<SubTodoDto> UpdateSubTodoAsync(Guid id, UpdateSubTodoDto dto)
-    {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-        {
-            throw new ApplicationValidationException("Name is invalid");
-        }
-
-        var parent = await InternalGetOneById(dto.ParentId, userContext.Id);
-        var isDuplicated = parent.SubTodos.Any(std => std.Name == dto.Name && std.Id != id);
-        if (isDuplicated)
-        {
-            throw new ApplicationValidationException("Name is used in another sub todo");
-        }
-
-        var subTodo = parent.SubTodos.FirstOrDefault(std => std.Id == id);
-        if (subTodo is null)
-        {
-            throw new EntityNotFoundException(nameof(subTodo));
-        }
-
-        subTodo.Name = dto.Name;
-
-        await context.SaveChangesAsync();
-        return mapper.Map<SubTodoDto>(subTodo);
-    }
-
-    public async Task DeleteSubTodoAsync(Guid id)
-    {
-        var subTodo = await InternalGetOneById(id, userContext.Id);
-        context.Todos.Remove(subTodo);
-        await context.SaveChangesAsync();
     }
 
     public async Task DeleteTodoAsync(Guid id)
