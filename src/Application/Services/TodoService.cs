@@ -44,7 +44,7 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
         }
 
         var parentRepeatableType = dto.RepeatableType ?? RepeatableType.Once;
-        
+
         var startDate = dto.StartDate;
         var endDate = dto.EndDate;
 
@@ -65,7 +65,8 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             // valida the repeatable type
             if (sTodoDto.RepeatableType != RepeatableType.Once && sTodoDto.RepeatableType != parentRepeatableType)
             {
-                throw new ApplicationValidationException($"Cannot set '{sTodoDto.RepeatableType}''s  sub todo '{sTodoDto.Name}' when the todo '{dto.Name}' is '{dto.RepeatableType}' ");
+                throw new ApplicationValidationException(
+                    $"Cannot set '{sTodoDto.RepeatableType}''s  sub todo '{sTodoDto.Name}' when the todo '{dto.Name}' is '{dto.RepeatableType}' ");
             }
 
             Repeatable sRepeatable = Repeatable.Create(
@@ -106,7 +107,8 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Invalid repeatable type");
         }
 
-        Repeatable sRepeatable = Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
+        Repeatable sRepeatable =
+            Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
         var subTodo = Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
         context.Todos.Add(subTodo);
         await context.SaveChangesAsync();
@@ -122,25 +124,76 @@ public class TodoService(IApplicationDbContext context, IUserContextAccessor use
             throw new ApplicationValidationException("Name is required.");
         }
 
-        if (todo.Name == dto.Name)
+        if (todo.ParentId is not null)
         {
-            return mapper.Map<TodoDto>(todo);
+            throw new ApplicationValidationException("Cannot update sub todo");
         }
 
         // Check duplicated
-        var existingTodo = await context.Todos.FirstOrDefaultAsync(td =>
+        var duplicatedTodo = await context.Todos.FirstOrDefaultAsync(td =>
             td.Name == dto.Name
+            && td.Id != id
             && td.UserId == userContext.Id
             && td.ParentId == todo.ParentId);
 
-        if (existingTodo is not null)
+        if (duplicatedTodo is not null)
         {
             throw new ApplicationValidationException("The new name have been used by another todo.");
         }
 
-        todo.Name = dto.Name;
+        // Validate the sub todos
+        if (dto.SubTodos is not null)
+        {
+            // All sub todo should not have duplicated name
+            var dupUpdatedSubTodos = dto.SubTodos.GroupBy(s => s.Name).Where(g => g.Count() > 1);
+            if (dupUpdatedSubTodos.Any())
+            {
+                throw new ApplicationValidationException("Duplicated sub todos input");
+            }
+
+            // Find the deleted sub todos
+            var notFoundSubs = todo.SubTodos.Where(std => dto.SubTodos.All(dstd => dstd.Id != std.Id));
+            context.Todos.RemoveRange(notFoundSubs);
+
+            // Find the updated sub todos
+            foreach (var subTodo in todo.SubTodos)
+            {
+                var updatedSubTodoDto = dto.SubTodos.FirstOrDefault(dstd => dstd.Id == subTodo.Id
+                                                                            && dstd.Name != subTodo.Name);
+                if (updatedSubTodoDto is { })
+                {
+                    subTodo.Name = updatedSubTodoDto.Name;
+                }
+            }
+
+            // Find the new sub todos
+            var newSubTodos = dto.SubTodos
+                .Where(stdDto => todo.SubTodos.All(std => std.Id != stdDto.Id))
+                .Select(stdDto => CreateSubTodo(todo, stdDto));
+            context.Todos.AddRange(newSubTodos);
+        }
+
+        if (todo.Name != dto.Name)
+        {
+            todo.Name = dto.Name;
+        }
+
         await context.SaveChangesAsync();
         return mapper.Map<TodoDto>(todo);
+    }
+
+    private Todo CreateSubTodo(Todo parent, UpsertNestedSubTodoDto dto)
+    {
+        var repeatableType = dto.RepeatableType ?? RepeatableType.Once;
+
+        if (repeatableType != RepeatableType.Once && repeatableType != parent.Repeatable.Type)
+        {
+            throw new ApplicationValidationException("Invalid repeatable type");
+        }
+
+        Repeatable sRepeatable =
+            Repeatable.Create(repeatableType, parent.Repeatable.StartDate, parent.Repeatable.EndDate);
+        return Todo.Create(userContext.Id, dto.Name, sRepeatable, parent.Id);
     }
 
     public async Task<SubTodoDto> UpdateSubTodoAsync(Guid id, UpdateSubTodoDto dto)
