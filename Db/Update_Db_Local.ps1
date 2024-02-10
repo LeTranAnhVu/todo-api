@@ -1,7 +1,7 @@
 Import-Module -Name "./Utils.psm1" -Function Get-IniContent
 
 # Load the config from file
-$configs = (Get-IniContent .\db.conf)["db"]
+$configs = (Get-IniContent $args[0])["db"]
 
 $env = $configs.env
 $database = $configs.database

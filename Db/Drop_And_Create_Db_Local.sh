@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Load the config from file
-. ./db.conf
+. $1
 
 
 # Drop the database
