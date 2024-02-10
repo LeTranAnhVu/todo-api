@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Database;
@@ -26,12 +25,4 @@ public static class ServiceCollectionExtension
     }
 }
 
-public class InfraDbOptions
-{
-    /// <summary>
-    /// Database connection string
-    /// </summary>
-    public required string DbConnectionString { get; set; }
-
-    public bool SeedData { get; set; } = false;
-}
+public record InfraDbOptions(string DbConnectionString, bool SeedData = false);

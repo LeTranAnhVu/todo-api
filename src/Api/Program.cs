@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-services.UseInfraDb(new InfraDbOptions()
-{
-    DbConnectionString = builder.Configuration.GetValue<string>("DbConnectionString") ?? "",
-});
+
+var dbConnectionString = builder.Configuration.GetValue<string>("DbConnectionString") ?? "";
+
+services.UseInfraDb(new InfraDbOptions(dbConnectionString));
 
 services.AddApplicationInsightsTelemetry();
 services.UseApplication();
@@ -59,7 +59,9 @@ builder.Services.AddCors(options =>
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });
-builder.Services.AddHealthChecks();
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(dbConnectionString);
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
