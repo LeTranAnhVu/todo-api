@@ -6,7 +6,7 @@
 
 #### Run
 ##### Initial step
-Create the file `db.conf` which content format like `db.example.conf`
+Create the file `db.<env>.conf` (e.g db.local.conf or db.test.conf)  which content format like `db.example.conf`
 
 ##### To drop and create new database everytime
 ```
