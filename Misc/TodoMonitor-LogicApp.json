@@ -1,0 +1,65 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Condition": {
+        "actions": {
+          "HTTP": {
+            "inputs": {
+              "method": "GET",
+              "uri": "https://brian-todo-api.azurewebsites.net/healthz"
+            },
+            "runAfter": {},
+            "type": "Http"
+          }
+        },
+        "expression": {
+          "and": [
+            {
+              "greater": [
+                "@variables('CurrentHour')",
+                "int(8)"
+              ]
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable": [
+            "Succeeded"
+          ]
+        },
+        "type": "If"
+      },
+      "Initialize_variable": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "CurrentHour",
+              "type": "string",
+              "value": "int(formatDateTime(convertTimeZone(utcNow(), 'UTC', 'EET'), 'HH'))"
+            }
+          ]
+        },
+        "runAfter": {},
+        "type": "InitializeVariable"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "parameters": {},
+    "triggers": {
+      "Recurrence": {
+        "evaluatedRecurrence": {
+          "frequency": "Minute",
+          "interval": 3
+        },
+        "recurrence": {
+          "frequency": "Minute",
+          "interval": 3
+        },
+        "type": "Recurrence"
+      }
+    }
+  },
+  "parameters": {}
+}
