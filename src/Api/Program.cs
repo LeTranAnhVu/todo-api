@@ -59,6 +59,7 @@ builder.Services.AddCors(options =>
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -69,6 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpLogging();
+app.MapHealthChecks("/healthz");
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
