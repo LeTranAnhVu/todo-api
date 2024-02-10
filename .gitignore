@@ -484,5 +484,5 @@ $RECYCLE.BIN/
 *.swp
 **/appsettings.*.json
 
-Db/**/db[.*].conf
+Db/**/db*.conf
 !Db/**/*db.example.conf
