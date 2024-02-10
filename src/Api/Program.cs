@@ -13,6 +13,7 @@ services.UseInfraDb(new InfraDbOptions()
     DbConnectionString = builder.Configuration.GetValue<string>("DbConnectionString") ?? "",
 });
 
+services.AddApplicationInsightsTelemetry();
 services.UseApplication();
 services.AddHttpContextAccessor();
 services.AddScoped<IUserContextAccessor, UserContextAccessor>();
@@ -57,6 +58,7 @@ builder.Services.AddCors(options =>
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+builder.Services.AddHttpLogging(o => { });
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -66,11 +68,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpLogging();
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
