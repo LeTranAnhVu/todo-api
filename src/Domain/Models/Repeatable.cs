@@ -25,13 +25,6 @@ public class Repeatable
         {
             return (false, "Occurred time is required");
         }
-        
-        if (occurDate is not null 
-            && Type == RepeatableType.Once 
-            && StartDate != occurDate.Value)
-        {
-            return (false, "Occurred day is invalid for the once time todo");
-        }
 
         if (occurDate is not null)
         {
