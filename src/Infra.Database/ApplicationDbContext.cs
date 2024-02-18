@@ -52,7 +52,8 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
 
         modelBuilder.Entity<TodoStatus>()
             .HasOne(stt => stt.Todo)
-            .WithMany();
+            .WithMany()
+            .HasForeignKey(stt => stt.TodoId);
 
     }
 }
